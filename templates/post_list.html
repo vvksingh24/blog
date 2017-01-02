@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block content %}
+	
+	<div class='col-sm-8 col-sm-offset-3'>
+	<h1>{{ title }}</h1>
+    <form  method="GET"action=''>
+        <input type='text' name='q' value="{{ request.GET.q}}" placeholder='Search Posts'/>
+        <input type='submit' value='submit'/>
+    </form>
+	{% for obj in queryset %}
+	<div class="row">
+	<div class="col-sm-12">
+    <div class="thumbnail">
+        {% if obj.image %}
+        <img src="{{ obj.image.url }}" class="img-responsive" />
+        {% endif %}        
+      <!-- <img src="..." alt="..."> -->
+      <div class="caption">
+        {% if obj.draft %}<h3>DRAFT</h3>{% endif %}{% if obj.publish > today %}<h3>Future Post</h3>{% endif %}
+        <h3><a href="{{ obj.get_absolute_url }}">{{ obj.title }}</a><small> {{ obj.publish }}</small></h3>
+        {% if request.user.get_full_name %}<p>Author : {{ request.user.get_full_name }}</p>{% endif %}
+        <p>{{ obj.content|linebreaks|truncatechars:120 }}</p>
+        <p><a href="{{ obj.get_absolute_url }}" class="btn btn-primary" role="button">View</a></p>
+      </div>
+    </div>
+  	</div>
+	</div>
+	{% endfor %}
+	<div class="pagination">
+    <span class="step-links">
+        {% if queryset.has_previous %}
+            <a href="?{{ page_request_var }}={{ queryset.previous_page_number }}{%if request.GET.q %}&q={{ request.GET.q }}{% endif %}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ queryset.number }} of {{ queryset.paginator.num_pages }}.
+        </span>
+
+        {% if queryset.has_next %}
+            <a href="?{{ page_request_var }}={{ queryset.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">next</a>
+        {% endif %}
+    </span>
+</div>
+	</div>
+	
+
+{% endblock content %}
